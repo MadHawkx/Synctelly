@@ -324,7 +324,7 @@ export class TopBar extends React.Component<{
                   lineHeight: '30px',
                 }}
               >
-                Watch
+                Sync
               </div>
               <div
                 style={{
@@ -336,36 +336,11 @@ export class TopBar extends React.Component<{
                   marginLeft: 'auto',
                 }}
               >
-                Party
+                Telly
               </div>
             </div>
           </a>
-          <div
-            style={{
-              display: 'flex',
-              marginLeft: '10px',
-              alignItems: 'center',
-            }}
-          >
-            <a
-              href="https://discord.gg/3rYj5HV"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footerIcon"
-              title="Discord"
-            >
-              <Icon name="discord" size="big" link />
-            </a>
-            <a
-              href="https://github.com/howardchung/watchparty"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footerIcon"
-              title="GitHub"
-            >
-              <Icon name="github" size="big" link />
-            </a>
-          </div>
+          
           <div
             className="mobileStack"
             style={{
@@ -380,7 +355,7 @@ export class TopBar extends React.Component<{
             {!this.props.hideMyRooms && this.props.user && (
               <ListRoomsButton user={this.props.user} />
             )}
-            {subscribeButton}
+            
             {!this.props.hideSignin && <SignInButton user={this.props.user} />}
           </div>
         </div>

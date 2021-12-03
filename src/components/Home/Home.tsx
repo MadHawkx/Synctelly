@@ -31,11 +31,7 @@ export const Home = ({ user }: { user: firebase.User | undefined }) => {
             title={`Screensharing`}
             text="Share a browser tab or an application."
           />
-          <Feature
-            icon="desktop"
-            title={`VBrowser`}
-            text="Launch a virtual browser in the cloud that all room members can view and control. No need to worry about slow upload speeds!"
-          />
+          
           <Feature
             icon="file"
             title={`File`}
