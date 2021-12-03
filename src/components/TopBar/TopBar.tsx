@@ -257,13 +257,6 @@ export class TopBar extends React.Component<{
   isCustomer: boolean;
 }> {
   render() {
-    const subscribeButton = (
-      <SubscribeButton
-        user={this.props.user}
-        isSubscriber={this.props.isSubscriber ?? false}
-        isCustomer={this.props.isCustomer ?? false}
-      />
-    );
     return (
       <React.Fragment>
         <div
