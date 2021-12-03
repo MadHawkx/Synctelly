@@ -1,4 +1,4 @@
-# WatchParty
+  # WatchParty
 
 ![screenshot](https://github.com/howardchung/watchparty/raw/master/public/screenshot_full.png)
 
