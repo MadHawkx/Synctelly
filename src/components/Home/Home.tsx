@@ -14,12 +14,20 @@ export const Home = ({ user }: { user: firebase.User | undefined }) => {
           subText={'No registration or download required.'}
           action={
             <div style={{ marginTop: '8px', width: '160px' }}>
+<<<<<<< HEAD
               <NewRoomButton user={user} />
+=======
+              <NewRoomButton user={user}  />
+>>>>>>> 11a52479 (first commit)
             </div>
           }
           image={'/screenshot4.png'}
         />
+<<<<<<< HEAD
         <Divider horizontal>
+=======
+        <Divider horizontal style={{margin:"3rem 0rem"}}>
+>>>>>>> 11a52479 (first commit)
           <Header inverted as="h4">
             <Icon name="film" />
             Multiple ways to watch
@@ -54,7 +62,11 @@ export const Home = ({ user }: { user: firebase.User | undefined }) => {
           image={'/screenshot18.png'}
           color="green"
         />
+<<<<<<< HEAD
         <Divider horizontal>
+=======
+        <Divider horizontal style={{margin:"3rem 0rem"}}>
+>>>>>>> 11a52479 (first commit)
           <Header inverted as="h4">
             <Icon name="cogs" />
             Features

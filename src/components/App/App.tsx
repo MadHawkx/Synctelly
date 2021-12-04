@@ -36,14 +36,22 @@ import {
 import { generateName } from '../../utils/generateName';
 import { Chat } from '../Chat';
 import { TopBar } from '../TopBar';
+<<<<<<< HEAD
 import { VBrowser } from '../VBrowser';
+=======
+//import { VBrowser } from '../VBrowser';
+>>>>>>> 11a52479 (first commit)
 import { VideoChat } from '../VideoChat';
 import { getCurrentSettings } from '../Settings';
 import { MultiStreamModal } from '../Modal/MultiStreamModal';
 import { ComboBox } from '../ComboBox/ComboBox';
 import { SearchComponent } from '../SearchComponent/SearchComponent';
 import { Controls } from '../Controls/Controls';
+<<<<<<< HEAD
 import { VBrowserModal } from '../Modal/VBrowserModal';
+=======
+//import { VBrowserModal } from '../Modal/VBrowserModal';
+>>>>>>> 11a52479 (first commit)
 import { SettingsTab } from '../Settings/SettingsTab';
 import { ErrorModal } from '../Modal/ErrorModal';
 import { PasswordModal } from '../Modal/PasswordModal';
@@ -1536,6 +1544,7 @@ export default class App extends React.Component<AppProps, AppState> {
             resetMultiSelect={this.resetMultiSelect}
           />
         )}
+<<<<<<< HEAD
         {this.state.isVBrowserModalOpen && (
           <VBrowserModal
             isSubscriber={this.props.isSubscriber}
@@ -1545,6 +1554,9 @@ export default class App extends React.Component<AppProps, AppState> {
             user={this.props.user}
           />
         )}
+=======
+    
+>>>>>>> 11a52479 (first commit)
         {this.state.isScreenShareModalOpen && (
           <ScreenShareModal
             closeModal={() => this.setState({ isScreenShareModalOpen: false })}
@@ -1641,7 +1653,11 @@ export default class App extends React.Component<AppProps, AppState> {
                         Stop Share
                       </Button>
                     )}
+<<<<<<< HEAD
                     {!this.screenShareStream && !sharer && !this.isVBrowser() && (
+=======
+                    {!this.screenShareStream && !sharer && (
+>>>>>>> 11a52479 (first commit)
                       <Popup
                         content={`Share a tab or an application. Make sure to check "Share audio" for best results.`}
                         trigger={
@@ -1662,6 +1678,7 @@ export default class App extends React.Component<AppProps, AppState> {
                         }
                       />
                     )}
+<<<<<<< HEAD
                     {!this.screenShareStream && !sharer && !this.isVBrowser() && (
                       <Popup
                         content="Launch a shared virtual browser"
@@ -1684,6 +1701,10 @@ export default class App extends React.Component<AppProps, AppState> {
                       />
                     )}
                     {this.isVBrowser() && (
+=======
+                    
+                    {/* {this.isVBrowser() && (
+>>>>>>> 11a52479 (first commit)
                       <Popup
                         content="Choose the person controlling the VBrowser"
                         trigger={
@@ -1760,8 +1781,13 @@ export default class App extends React.Component<AppProps, AppState> {
                         <Icon name="cancel" />
                         Stop VBrowser
                       </Button>
+<<<<<<< HEAD
                     )}
                     {!this.screenShareStream && !sharer && !this.isVBrowser() && (
+=======
+                    )} */}
+                    {!this.screenShareStream && !sharer && (
+>>>>>>> 11a52479 (first commit)
                       <Popup
                         content="Stream your own video file"
                         trigger={
@@ -1856,6 +1882,7 @@ export default class App extends React.Component<AppProps, AppState> {
                             justifyContent: 'center',
                           }}
                         >
+<<<<<<< HEAD
                           {this.state.loading && (
                             <Dimmer active>
                               <Loader>
@@ -1865,6 +1892,9 @@ export default class App extends React.Component<AppProps, AppState> {
                               </Loader>
                             </Dimmer>
                           )}
+=======
+                          
+>>>>>>> 11a52479 (first commit)
                           {!this.state.loading && !this.state.currentMedia && (
                             <Message
                               color="yellow"
@@ -1899,6 +1929,7 @@ export default class App extends React.Component<AppProps, AppState> {
                         allow="autoplay"
                         src="https://www.youtube.com/embed/?enablejsapi=1&controls=0&rel=0"
                       />
+<<<<<<< HEAD
                       {this.isVBrowser() &&
                       this.getVBrowserPass() &&
                       this.getVBrowserHost() ? (
@@ -1915,6 +1946,9 @@ export default class App extends React.Component<AppProps, AppState> {
                           }
                         />
                       ) : (
+=======
+                      {(
+>>>>>>> 11a52479 (first commit)
                         <video
                           style={{
                             display:
