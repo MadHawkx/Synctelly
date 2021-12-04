@@ -94,7 +94,6 @@ export class VideoChat extends React.Component<VideoChatProps> {
       }
     }
     this.ourStream = stream;
-    // alert server we've joined video chat
     this.socket.emit('CMD:joinVideo');
   };
 
