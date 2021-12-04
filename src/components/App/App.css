@@ -1,9 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url(https://fonts.googleapis.com/css?family=Fira+Sans:100,300,400);
+
 ::-webkit-scrollbar-corner {
   background: rgba(0, 0, 0, 0);
 }
 
 body {
   background-color: #222222;
+  font-family: 'Roboto';
 }
 
 .comment {
@@ -151,4 +155,23 @@ body {
   border-bottom: 2px solid #2185d0;
   background: inherit;
   margin-bottom: -2px;
+}
+
+.button-style {
+  background-image: linear-gradient(to right, #41929c, #389bec, #243580)!important;
+  background-size: 300% 100%!important;
+  transition: all 0.5s ease-in-out!important;
+  border-radius:3px!important;  
+  font-weight: 700!important;
+  color: white!important;
+  text-transform: capitalize!important;
+}
+
+.button-style:hover,
+.button-style:active {
+  background-position: -50% 0!important;
+}
+
+.ui.popup{
+  border-radius:15px!important;
 }

@@ -45,7 +45,7 @@ export class NewRoomButton extends React.Component<{
             icon
             labelPosition="left"
             onClick={this.createRoom}
-            className="toolButton"
+            className="toolButton button-style"
             fluid
           >
             <Icon name="certificate" />
@@ -121,22 +121,20 @@ export class SignInButton extends React.Component<SignInButtonProps> {
         )}
         <Popup
           basic
-          content="Sign in to set your name and picture, subscribe, or launch VBrowsers"
+          content="Sign in to set your name and picture!!"
           trigger={
             <Dropdown
               style={{ height: '36px' }}
+
               icon="sign in"
               labeled
-              className="icon"
+              className="icon button-style"
               button
               text="Sign in"
               fluid={this.props.fluid}
             >
               <Dropdown.Menu>
-                <Dropdown.Item onClick={this.facebookSignIn}>
-                  <Icon name="facebook" />
-                  Facebook
-                </Dropdown.Item>
+                
                 <Dropdown.Item onClick={this.googleSignIn}>
                   <Icon name="google" />
                   Google
@@ -275,40 +273,7 @@ export class TopBar extends React.Component<{
           }}
         >
           <a href="/" style={{ display: 'flex' }}>
-            <div
-              style={{
-                height: '48px',
-                width: '48px',
-                marginRight: '10px',
-                borderRadius: '50%',
-                position: 'relative',
-                backgroundColor: '#' + colorMappings.blue,
-              }}
-            >
-              <Icon
-                inverted
-                name="film"
-                size="large"
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  width: '100%',
-                  margin: '0 auto',
-                }}
-              />
-              <Icon
-                inverted
-                name="group"
-                size="large"
-                color="green"
-                style={{
-                  position: 'absolute',
-                  bottom: 8,
-                  width: '100%',
-                  margin: '0 auto',
-                }}
-              />
-            </div>
+      
             <div
               style={{
                 display: 'flex',

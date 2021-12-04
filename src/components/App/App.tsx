@@ -36,14 +36,14 @@ import {
 import { generateName } from '../../utils/generateName';
 import { Chat } from '../Chat';
 import { TopBar } from '../TopBar';
-import { VBrowser } from '../VBrowser';
+//import { VBrowser } from '../VBrowser';
 import { VideoChat } from '../VideoChat';
 import { getCurrentSettings } from '../Settings';
 import { MultiStreamModal } from '../Modal/MultiStreamModal';
 import { ComboBox } from '../ComboBox/ComboBox';
 import { SearchComponent } from '../SearchComponent/SearchComponent';
 import { Controls } from '../Controls/Controls';
-import { VBrowserModal } from '../Modal/VBrowserModal';
+//import { VBrowserModal } from '../Modal/VBrowserModal';
 import { SettingsTab } from '../Settings/SettingsTab';
 import { ErrorModal } from '../Modal/ErrorModal';
 import { PasswordModal } from '../Modal/PasswordModal';
@@ -1536,15 +1536,7 @@ export default class App extends React.Component<AppProps, AppState> {
             resetMultiSelect={this.resetMultiSelect}
           />
         )}
-        {this.state.isVBrowserModalOpen && (
-          <VBrowserModal
-            isSubscriber={this.props.isSubscriber}
-            subscribeButton={subscribeButton}
-            closeModal={() => this.setState({ isVBrowserModalOpen: false })}
-            startVBrowser={this.startVBrowser}
-            user={this.props.user}
-          />
-        )}
+    
         {this.state.isScreenShareModalOpen && (
           <ScreenShareModal
             closeModal={() => this.setState({ isScreenShareModalOpen: false })}
@@ -1641,7 +1633,7 @@ export default class App extends React.Component<AppProps, AppState> {
                         Stop Share
                       </Button>
                     )}
-                    {!this.screenShareStream && !sharer && !this.isVBrowser() && (
+                    {!this.screenShareStream && !sharer && (
                       <Popup
                         content={`Share a tab or an application. Make sure to check "Share audio" for best results.`}
                         trigger={
@@ -1662,28 +1654,8 @@ export default class App extends React.Component<AppProps, AppState> {
                         }
                       />
                     )}
-                    {!this.screenShareStream && !sharer && !this.isVBrowser() && (
-                      <Popup
-                        content="Launch a shared virtual browser"
-                        trigger={
-                          <Button
-                            fluid
-                            className="toolButton"
-                            disabled={!this.haveLock()}
-                            icon
-                            labelPosition="left"
-                            color="green"
-                            onClick={() => {
-                              this.setState({ isVBrowserModalOpen: true });
-                            }}
-                          >
-                            <Icon name="desktop" />
-                            VBrowser
-                          </Button>
-                        }
-                      />
-                    )}
-                    {this.isVBrowser() && (
+                    
+                    {/* {this.isVBrowser() && (
                       <Popup
                         content="Choose the person controlling the VBrowser"
                         trigger={
@@ -1760,8 +1732,8 @@ export default class App extends React.Component<AppProps, AppState> {
                         <Icon name="cancel" />
                         Stop VBrowser
                       </Button>
-                    )}
-                    {!this.screenShareStream && !sharer && !this.isVBrowser() && (
+                    )} */}
+                    {!this.screenShareStream && !sharer && (
                       <Popup
                         content="Stream your own video file"
                         trigger={
@@ -1856,15 +1828,7 @@ export default class App extends React.Component<AppProps, AppState> {
                             justifyContent: 'center',
                           }}
                         >
-                          {this.state.loading && (
-                            <Dimmer active>
-                              <Loader>
-                                {this.isVBrowser()
-                                  ? 'Launching virtual browser. This can take up to a minute.'
-                                  : ''}
-                              </Loader>
-                            </Dimmer>
-                          )}
+                          
                           {!this.state.loading && !this.state.currentMedia && (
                             <Message
                               color="yellow"
@@ -1899,22 +1863,7 @@ export default class App extends React.Component<AppProps, AppState> {
                         allow="autoplay"
                         src="https://www.youtube.com/embed/?enablejsapi=1&controls=0&rel=0"
                       />
-                      {this.isVBrowser() &&
-                      this.getVBrowserPass() &&
-                      this.getVBrowserHost() ? (
-                        <VBrowser
-                          username={this.socket.id}
-                          password={this.getVBrowserPass()}
-                          hostname={this.getVBrowserHost()}
-                          controlling={this.state.controller === this.socket.id}
-                          setLoadingFalse={this.setLoadingFalse}
-                          resolution={this.state.vBrowserResolution}
-                          doPlay={this.doPlay}
-                          setResolution={(data: string) =>
-                            this.setState({ vBrowserResolution: data })
-                          }
-                        />
-                      ) : (
+                      {(
                         <video
                           style={{
                             display:
