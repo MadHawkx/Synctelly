@@ -45,11 +45,7 @@ export class NewRoomButton extends React.Component<{
             icon
             labelPosition="left"
             onClick={this.createRoom}
-<<<<<<< HEAD
-            className="toolButton"
-=======
             className="toolButton button-style"
->>>>>>> 11a52479 (first commit)
             fluid
           >
             <Icon name="certificate" />
@@ -125,15 +121,6 @@ export class SignInButton extends React.Component<SignInButtonProps> {
         )}
         <Popup
           basic
-<<<<<<< HEAD
-          content="Sign in to set your name and picture, subscribe, or launch VBrowsers"
-          trigger={
-            <Dropdown
-              style={{ height: '36px' }}
-              icon="sign in"
-              labeled
-              className="icon"
-=======
           content="Sign in to set your name and picture!!"
           trigger={
             <Dropdown
@@ -142,20 +129,12 @@ export class SignInButton extends React.Component<SignInButtonProps> {
               icon="sign in"
               labeled
               className="icon button-style"
->>>>>>> 11a52479 (first commit)
               button
               text="Sign in"
               fluid={this.props.fluid}
             >
               <Dropdown.Menu>
-<<<<<<< HEAD
-                <Dropdown.Item onClick={this.facebookSignIn}>
-                  <Icon name="facebook" />
-                  Facebook
-                </Dropdown.Item>
-=======
                 
->>>>>>> 11a52479 (first commit)
                 <Dropdown.Item onClick={this.googleSignIn}>
                   <Icon name="google" />
                   Google
@@ -294,44 +273,7 @@ export class TopBar extends React.Component<{
           }}
         >
           <a href="/" style={{ display: 'flex' }}>
-<<<<<<< HEAD
-            <div
-              style={{
-                height: '48px',
-                width: '48px',
-                marginRight: '10px',
-                borderRadius: '50%',
-                position: 'relative',
-                backgroundColor: '#' + colorMappings.blue,
-              }}
-            >
-              <Icon
-                inverted
-                name="film"
-                size="large"
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  width: '100%',
-                  margin: '0 auto',
-                }}
-              />
-              <Icon
-                inverted
-                name="group"
-                size="large"
-                color="green"
-                style={{
-                  position: 'absolute',
-                  bottom: 8,
-                  width: '100%',
-                  margin: '0 auto',
-                }}
-              />
-            </div>
-=======
       
->>>>>>> 11a52479 (first commit)
             <div
               style={{
                 display: 'flex',

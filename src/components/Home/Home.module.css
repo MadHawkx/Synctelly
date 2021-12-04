@@ -9,30 +9,18 @@
   color: white;
   width: 100%;
   background-image: linear-gradient(to bottom, #222222, #006199);
-<<<<<<< HEAD
-  border-bottom-left-radius: 0%;
-  border-bottom-right-radius: 50%;
-=======
->>>>>>> 11a52479 (first commit)
   display: flex;
   justify-content: center;
 }
 
 .hero.green {
   background-image: linear-gradient(to bottom, #222222, rgb(21, 114, 43));
-<<<<<<< HEAD
-  border-bottom-left-radius: 50%;
-  border-bottom-right-radius: 0%;
-}
-
-=======
 
 }
 
 .hero.green .heroInner {
   flex-direction: row-reverse;
 }
->>>>>>> 11a52479 (first commit)
 .heroInner {
   padding: 30px;
   max-width: 1200px;
@@ -76,10 +64,7 @@
   color: lightgray;
   font-size: 14px;
 }
-<<<<<<< HEAD
-=======
 
 .ui.horizontal.divider{
   margin:3rem 0;
 }
->>>>>>> 11a52479 (first commit)

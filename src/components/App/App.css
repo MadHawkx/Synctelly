@@ -1,19 +1,13 @@
-<<<<<<< HEAD
-=======
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 @import url(https://fonts.googleapis.com/css?family=Fira+Sans:100,300,400);
 
->>>>>>> 11a52479 (first commit)
 ::-webkit-scrollbar-corner {
   background: rgba(0, 0, 0, 0);
 }
 
 body {
   background-color: #222222;
-<<<<<<< HEAD
-=======
   font-family: 'Roboto';
->>>>>>> 11a52479 (first commit)
 }
 
 .comment {
@@ -162,8 +156,6 @@ body {
   background: inherit;
   margin-bottom: -2px;
 }
-<<<<<<< HEAD
-=======
 
 .button-style {
   background-image: linear-gradient(to right, #41929c, #389bec, #243580)!important;
@@ -183,4 +175,3 @@ body {
 .ui.popup{
   border-radius:15px!important;
 }
->>>>>>> 11a52479 (first commit)
