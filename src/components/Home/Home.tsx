@@ -19,7 +19,7 @@ export const Home = ({ user }: { user: firebase.User | undefined }) => {
           }
           image={'/screenshot4.png'}
         />
-        <Divider horizontal>
+        <Divider horizontal style={{margin:"3rem 0rem"}}>
           <Header inverted as="h4">
             <Icon name="film" />
             Multiple ways to watch
@@ -54,7 +54,7 @@ export const Home = ({ user }: { user: firebase.User | undefined }) => {
           image={'/screenshot18.png'}
           color="green"
         />
-        <Divider horizontal>
+        <Divider horizontal style={{margin:"3rem 0rem"}}>
           <Header inverted as="h4">
             <Icon name="cogs" />
             Features

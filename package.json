@@ -21,6 +21,7 @@
     "firebase-admin": "^10.0.0",
     "ioredis": "^4.28.2",
     "magnet-uri": "^6.2.0",
+    "moment": "^2.29.1",
     "moniker": "^0.1.2",
     "pg": "^8.7.1",
     "pm2": "^5.1.2",

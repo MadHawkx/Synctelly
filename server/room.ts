@@ -465,6 +465,8 @@ export class Room {
     if (!this.video) {
       this.playlistNext(null);
     }
+    
+    console.log(this.playlist,'playlist');
   };
 
   private playlistDelete = (socket: Socket, index: number) => {
