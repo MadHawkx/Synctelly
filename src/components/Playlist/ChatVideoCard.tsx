@@ -106,6 +106,7 @@ const ChatVideoCard: React.FC<{
                 onClick={(e) => {
                   e.stopPropagation();
                   e.nativeEvent.stopImmediatePropagation();
+                  console.log(e,{ value: video.url },'Playlist');
                   onPlaylistAdd(e, { value: video.url });
                 }}
               >

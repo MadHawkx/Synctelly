@@ -125,13 +125,13 @@ export const SettingsTab = ({
           closeModal={() => setPermModalOpen(false)}
         ></PermanentRoomModal>
       )}
-      <div className="sectionHeader">Room Settings</div>
+  {/*     <div className="sectionHeader">Room Settings</div>
       {!user && (
         <Message color="yellow" size="tiny">
           You need to be signed in to change these settings.
         </Message>
-      )}
-      <SettingRow
+      )} */}
+      {/* <SettingRow
         icon={roomLock ? 'lock' : 'lock open'}
         name={`Lock Room`}
         description="Only the person who locked the room can control the video."
@@ -157,7 +157,7 @@ export const SettingsTab = ({
           disabled={permanentDisabled}
           onChange={(_e, data) => setRoomOwner({ undo: !data.checked })}
         />
-      }
+      } */}
       {owner && owner === user?.uid && (
         <div className="sectionHeader">Admin Settings</div>
       )}
@@ -269,9 +269,10 @@ export const SettingsTab = ({
         </Button>
       )}
       {/* MEDIA_PATH */}
-      <div className="sectionHeader">Local Settings</div>
+      <div className="sectionHeader custom-style1" >Local Settings</div>
       <SettingRow
         updateTS={updateTS}
+        
         icon="bell"
         name="Disable chat notification sound"
         description="Don't play a sound when a chat message is sent while you're on another tab"
@@ -319,7 +320,7 @@ const SettingRow = ({
       <div>
         <div style={{ display: 'flex' }}>
           <Icon size="large" name={icon as any} />
-          <div>
+          <div style={{ fontSize: '12px' }}>
             {name} {helpIcon}
             {subOnly ? (
               <Label size="mini" color="orange">
@@ -337,7 +338,7 @@ const SettingRow = ({
             />
           )}
         </div>
-        <div className="smallText" style={{ marginBottom: '8px' }}>
+        <div className="smallText" style={{ marginBottom: '8px',fontSize: '10px'}}>
           {description}
         </div>
         {content}

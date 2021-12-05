@@ -3,7 +3,7 @@ import { Button, Comment, Icon, Input } from 'semantic-ui-react';
 import 'emoji-mart/css/emoji-mart.css';
 import { EmojiData, Picker } from 'emoji-mart';
 import onClickOutside from 'react-onclickoutside';
-
+import moment from 'moment';
 import {
   formatTimestamp,
   getColorForStringHex,
@@ -277,7 +277,7 @@ const ChatMessage = ({
           }
         />
         <Comment.Metadata className="dark">
-          <div>{new Date(timestamp).toLocaleTimeString()}</div>
+          <div>{moment(new Date(timestamp)).format("HH:mm")}</div>
         </Comment.Metadata>
         <Comment.Text className="light system">
           {cmd && formatMessage(cmd, msg)}
