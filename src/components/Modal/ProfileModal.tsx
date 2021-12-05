@@ -29,32 +29,29 @@ export class ProfileModal extends React.Component<{
   render() {
     const { close, userImage } = this.props;
     return (
-      <Modal open={true} onClose={close as any}>
+      <Modal open={true} onClose={close as any} className='modal-styles'>
         <Modal.Header>
           <Image avatar src={userImage} />
           {this.props.user.email}
         </Modal.Header>
-        <Modal.Content>
+        <Modal.Content style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
+            >
           <div
             style={{
               width: '300px',
               display: 'flex',
               alignItems: 'center',
               flexDirection: 'column',
+              justifyContent: 'center',
               gap: '10px',
             }}
           >
-            <Button
-              icon
-              labelPosition="left"
-              fluid
-              href="https://gravatar.com"
-              target="_blank"
-              color="blue"
-            >
-              <Icon name="image" />
-              Edit Gravatar
-            </Button>
+
             <Button
               disabled={this.state.resetDisabled}
               icon

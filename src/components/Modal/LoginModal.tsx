@@ -48,7 +48,7 @@ export class LoginModal extends React.Component<{
   render() {
     const { closeLogin } = this.props;
     return (
-      <Modal open={true} onClose={closeLogin as any}>
+      <Modal open={true} onClose={closeLogin as any} className='modal-styles'>
         <Modal.Header>
           {this.state.isCreateMode ? 'Create an account' : 'Login'}
         </Modal.Header>
@@ -75,7 +75,7 @@ export class LoginModal extends React.Component<{
               />
             </Form.Field>
             {!this.state.isCreateMode && (
-              <div>
+              <div className="para">
                 Don't have an account?{' '}
                 <button
                   type="button"
