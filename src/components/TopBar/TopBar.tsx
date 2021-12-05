@@ -154,97 +154,7 @@ export class SignInButton extends React.Component<SignInButtonProps> {
   }
 }
 
-export class ListRoomsButton extends React.Component<{
-  user: firebase.User | undefined;
-}> {
-  public state = { rooms: [] as PersistentRoom[] };
 
-  componentDidMount() {
-    this.refreshRooms();
-  }
-
-  refreshRooms = async () => {
-    if (this.props.user) {
-      const token = await this.props.user.getIdToken();
-      const response = await axios.get(
-        serverPath + `/listRooms?uid=${this.props.user?.uid}&token=${token}`
-      );
-      this.setState({ rooms: response.data });
-    }
-  };
-
-  deleteRoom = async (roomId: string) => {
-    if (this.props.user) {
-      const token = await this.props.user.getIdToken();
-      await axios.delete(
-        serverPath +
-          `/deleteRoom?uid=${this.props.user?.uid}&token=${token}&roomId=${roomId}`
-      );
-      this.setState({
-        rooms: this.state.rooms.filter((room) => room.roomId !== roomId),
-      });
-      this.refreshRooms();
-    }
-  };
-
-  render() {
-    return (
-      <Dropdown
-        style={{ height: '36px' }}
-        icon="group"
-        labeled
-        className="icon"
-        button
-        text="My Rooms"
-        onClick={this.refreshRooms}
-        scrolling
-      >
-        <Dropdown.Menu>
-          {this.state.rooms.length === 0 && (
-            <Dropdown.Item disabled>You have no permanent rooms.</Dropdown.Item>
-          )}
-          {this.state.rooms.map((room: any) => {
-            return (
-              <Dropdown.Item
-                link
-                href={
-                  room.vanity
-                    ? '/r/' + room.vanity
-                    : '/' + room.roomId.replace('/', '#')
-                }
-                onClick={() => {
-                  if (!room.vanity) {
-                    setTimeout(() => window.location.reload(), 100);
-                  }
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  {room.vanity
-                    ? `/r/${room.vanity}`
-                    : room.roomId.replace('/', '#')}
-                  <div style={{ marginLeft: 'auto', paddingLeft: '20px' }}>
-                    <Button
-                      icon
-                      onClick={(e: React.MouseEvent) => {
-                        e.stopPropagation();
-                        e.nativeEvent.stopImmediatePropagation();
-                        this.deleteRoom(room.roomId);
-                      }}
-                      color="red"
-                      size="mini"
-                    >
-                      <Icon name="trash" />
-                    </Button>
-                  </div>
-                </div>
-              </Dropdown.Item>
-            );
-          })}
-        </Dropdown.Menu>
-      </Dropdown>
-    );
-  }
-}
 
 export class TopBar extends React.Component<{
   user?: firebase.User;
@@ -317,9 +227,7 @@ export class TopBar extends React.Component<{
             {!this.props.hideNewRoom && (
               <NewRoomButton user={this.props.user} openNewTab />
             )}
-            {!this.props.hideMyRooms && this.props.user && (
-              <ListRoomsButton user={this.props.user} />
-            )}
+            
             
             {!this.props.hideSignin && <SignInButton user={this.props.user} />}
           </div>
