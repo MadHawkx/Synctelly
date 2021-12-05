@@ -175,3 +175,7 @@ body {
 .ui.popup{
   border-radius:15px!important;
 }
+
+.ui.yellow.message{
+  width: 50% !important;
+}
