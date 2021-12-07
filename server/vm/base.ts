@@ -2,8 +2,6 @@ import config from '../config';
 import Redis from 'ioredis';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import { redisCount } from '../utils/redis';
-import { execSync } from 'child_process';
 
 let redis: Redis.Redis | undefined = undefined;
 if (config.REDIS_URL) {
@@ -41,14 +39,6 @@ export abstract class VMManager {
       : Number(config.VM_POOL_LIMIT);
 
   protected getAdjustedBuffer = () => {
-    // During ramp down hours, keep a smaller buffer
-    // During ramp up hours, keep a larger buffer
-    const rampDownHours = [5, 9];
-    const rampUpHours = [9, 17];
-    const nowHour = new Date().getUTCHours();
-    const isRampDown =
-      nowHour >= rampDownHours[0] && nowHour < rampDownHours[1];
-    const isRampUp = nowHour >= rampUpHours[0] && nowHour < rampUpHours[1];
     let vmBufferSize = 0;
     if (this.isLarge) {
       vmBufferSize = Number(config.VM_POOL_BUFFER_LARGE) || 0;
@@ -111,7 +101,6 @@ export abstract class VMManager {
       const password = uuidv4();
       const id = await this.startVM(password);
       await this.redis.rpush(this.getRedisStagingKey(), id);
-      redisCount('vBrowserLaunches');
       return id;
     } catch (e: any) {
       console.log(
@@ -355,7 +344,6 @@ export abstract class VMManager {
                   .lrem(this.getRedisStagingKey(), 0, id)
                   .del(this.getRedisStagingKey() + ':' + id)
                   .exec();
-                redisCount('vBrowserStagingFails');
                 await this.resetVM(id);
                 //await this.terminateVMWrapper(id);
               } else {

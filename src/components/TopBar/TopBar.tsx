@@ -1,11 +1,9 @@
 import React from 'react';
-import { serverPath, colorMappings, getUserImage } from '../../utils';
+import { serverPath, getUserImage } from '../../utils';
 import { Icon, Popup, Button, Dropdown, Image } from 'semantic-ui-react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { LoginModal } from '../Modal/LoginModal';
-import axios from 'axios';
-import { SubscribeButton } from '../SubscribeButton/SubscribeButton';
 import { ProfileModal } from '../Modal/ProfileModal';
 
 export class NewRoomButton extends React.Component<{
@@ -165,13 +163,6 @@ export class TopBar extends React.Component<{
   isCustomer: boolean;
 }> {
   render() {
-    const subscribeButton = (
-      <SubscribeButton
-        user={this.props.user}
-        isSubscriber={this.props.isSubscriber ?? false}
-        isCustomer={this.props.isCustomer ?? false}
-      />
-    );
     return (
       <React.Fragment>
         <div

@@ -6,13 +6,10 @@ import magnet from 'magnet-uri';
 import React from 'react';
 import {
   Button,
-  Dimmer,
-  Dropdown,
   DropdownProps,
   Grid,
   Icon,
   Input,
-  Loader,
   Message,
   Popup,
   Progress,
@@ -47,7 +44,6 @@ import { Controls } from '../Controls/Controls';
 import { SettingsTab } from '../Settings/SettingsTab';
 import { ErrorModal } from '../Modal/ErrorModal';
 import { PasswordModal } from '../Modal/PasswordModal';
-import { SubscribeButton } from '../SubscribeButton/SubscribeButton';
 import { ScreenShareModal } from '../Modal/ScreenShareModal';
 import { FileShareModal } from '../Modal/FileShareModal';
 import firebase from 'firebase/compat/app';

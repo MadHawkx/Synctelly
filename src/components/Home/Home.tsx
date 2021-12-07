@@ -14,7 +14,7 @@ export const Home = ({ user }: { user: firebase.User | undefined }) => {
           subText={'No registration or download required.'}
           action={
             <div style={{ marginTop: '8px', width: '160px' }}>
-              <NewRoomButton user={user} />
+              <NewRoomButton user={user}  />
             </div>
           }
           image={'/screenshot4.png'}

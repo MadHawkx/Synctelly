@@ -1,36 +1,13 @@
 import config from './config';
 import crypto from 'crypto';
-import zlib from 'zlib';
-import util from 'util';
 
 import axios from 'axios';
-import Redis from 'ioredis';
 import { Server, Socket } from 'socket.io';
-import { Client, QueryResult } from 'pg';
 
 import { validateUserToken } from './utils/firebase';
-import { redisCount, redisCountDistinct } from './utils/redis';
 import { getCustomerByEmail } from './utils/stripe';
 import { AssignedVM } from './vm/base';
-import { getStartOfDay } from './utils/time';
-import { assignVM, getVMManager } from './vm/utils';
-import { updateObject, upsertObject } from './utils/postgres';
 import { fetchYoutubeVideo, getYoutubeVideoID } from './utils/youtube';
-
-const gzip = util.promisify(zlib.gzip);
-
-let redis: Redis.Redis | undefined = undefined;
-if (config.REDIS_URL) {
-  redis = new Redis(config.REDIS_URL);
-}
-let postgres: Client | undefined = undefined;
-if (config.DATABASE_URL) {
-  postgres = new Client({
-    connectionString: config.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  });
-  postgres.connect();
-}
 
 export class Room {
   // Serialized state
@@ -56,7 +33,6 @@ export class Room {
   private io: Server;
   private clientIdMap: StringDict = {};
   private uidMap: StringDict = {};
-  public roomRedis: Redis.Redis | undefined = undefined;
   private tsInterval: NodeJS.Timeout | undefined = undefined;
   public isChatDisabled: boolean | undefined = undefined;
 
@@ -81,35 +57,13 @@ export class Room {
 
     io.of(roomId).use(async (socket, next) => {
       // Validate the connector has the room password
-      const password = socket.handshake.query?.password;
       // console.log(this.roomId, this.password, password);
-      if (postgres) {
-        const result = await postgres.query(
-          `SELECT password, "isSubRoom" FROM room where "roomId" = $1`,
-          [this.roomId]
-        );
-        const roomPassword = result.rows[0]?.password;
-        if (roomPassword && password !== roomPassword) {
-          next(new Error('not authorized'));
-          return;
-        }
-        const isSubRoom = result.rows[0]?.isSubRoom;
-        const roomCapacity = isSubRoom
-          ? config.ROOM_CAPACITY_SUB
-          : config.ROOM_CAPACITY;
-        if (roomCapacity && this.roster.length >= roomCapacity) {
-          next(new Error('room full'));
-          return;
-        }
-      }
       next();
     });
     io.of(roomId).on('connection', (socket: Socket) => {
       const clientId = socket.handshake.query?.clientId as string;
       this.roster.push({ id: socket.id });
       this.clientIdMap[socket.id] = clientId;
-      redisCount('connectStarts');
-      redisCountDistinct('connectStartsDistinct', clientId);
 
       socket.emit('REC:host', this.getHostState());
       socket.emit('REC:nameMap', this.nameMap);
@@ -118,7 +72,6 @@ export class Room {
       socket.emit('REC:lock', this.lock);
       socket.emit('chatinit', this.chat);
       socket.emit('playlist', this.playlist);
-      this.getRoomState(socket);
       io.of(roomId).emit('roster', this.roster);
 
       socket.on('CMD:name', (data) => this.changeUserName(socket, data));
@@ -149,7 +102,6 @@ export class Room {
       socket.on('CMD:askHost', () => {
         socket.emit('REC:host', this.getHostState());
       });
-      socket.on('CMD:getRoomState', () => this.getRoomState(socket));
       socket.on('CMD:setRoomState', (data) => this.setRoomState(socket, data));
       socket.on('CMD:setRoomOwner', (data) => this.setRoomOwner(socket, data));
       socket.on('CMD:playlistNext', (data) => this.playlistNext(socket, data));
@@ -242,26 +194,11 @@ export class Room {
 
   public saveRoom = async () => {
     this.lastUpdateTime = new Date();
-    if (postgres) {
-      try {
-        const roomString = this.serialize();
-        await postgres?.query(
-          `UPDATE room SET "lastUpdateTime" = $1, data = $2 WHERE "roomId" = $3`,
-          [this.lastUpdateTime, roomString, this.roomId]
-        );
-      } catch (e) {
-        console.warn(e);
-      }
-    }
   };
 
   public destroy = () => {
     if (this.tsInterval) {
       clearInterval(this.tsInterval);
-    }
-    if (this.roomRedis) {
-      this.roomRedis?.disconnect();
-      this.roomRedis = undefined;
     }
   };
 
@@ -290,34 +227,11 @@ export class Room {
     };
   };
 
-  public stopVBrowserInternal = async () => {
-    this.roomRedis?.disconnect();
-    this.roomRedis = undefined;
-    const assignTime = this.vBrowser && this.vBrowser.assignTime;
-    const id = this.vBrowser?.id;
-    const provider = this.vBrowser?.provider ?? config.VM_MANAGER_ID;
-    const isLarge = this.vBrowser?.large ?? false;
-    const region = this.vBrowser?.region ?? '';
-    const uid = this.vBrowser?.creatorUID ?? '';
+  public stopVBrowserInternal = async () => {;
     this.vBrowser = undefined;
     this.cmdHost(null, '');
     // Force a save because this might change in unattended rooms
     this.saveRoom();
-    if (redis && assignTime) {
-      await redis.lpush('vBrowserSessionMS', Number(new Date()) - assignTime);
-      await redis.ltrim('vBrowserSessionMS', 0, 49);
-    }
-    if (redis && uid) {
-      await redis.del('vBrowserUIDLock:' + uid);
-    }
-    if (id) {
-      try {
-        const vmManager = getVMManager(provider, isLarge, region);
-        await vmManager?.resetVM(id);
-      } catch (e) {
-        console.warn(e);
-      }
-    }
   };
 
   private cmdHost = (socket: Socket | null, data: string) => {
@@ -364,12 +278,7 @@ export class Room {
   };
 
   private validateOwner = async (uid: string) => {
-    const result = await postgres?.query(
-      'SELECT owner FROM room where "roomId" = $1',
-      [this.roomId]
-    );
-    const owner = result?.rows[0]?.owner;
-    return !owner || uid === owner;
+    return false;
   };
 
   private changeUserName = (socket: Socket, data: string) => {
@@ -417,7 +326,6 @@ export class Room {
       // Can't update the video while someone is screensharing/filesharing or vbrowser is running
       return;
     }
-    redisCount('urlStarts');
     this.cmdHost(socket, data);
   };
 
@@ -442,7 +350,6 @@ export class Room {
     if (data && data.length > 20000) {
       return;
     }
-    redisCount('playlistAdds');
     const youtubeVideoId = getYoutubeVideoID(data);
     if (youtubeVideoId) {
       const video = await fetchYoutubeVideo(youtubeVideoId);
@@ -542,7 +449,6 @@ export class Room {
     if (data && data.length > 10000) {
       return;
     }
-    redisCount('chatMessages');
     const chatMsg = { id: socket.id, msg: data };
     this.addChatMessage(socket, chatMsg);
   };
@@ -573,7 +479,6 @@ export class Room {
     const match = this.roster.find((user) => user.id === socket.id);
     if (match) {
       match.isVideoChat = true;
-      redisCount('videoChatStarts');
     }
     this.io.of(this.roomId).emit('roster', this.roster);
   };
@@ -597,10 +502,8 @@ export class Room {
     }
     if (data && data.file) {
       this.cmdHost(socket, 'fileshare://' + socket.id);
-      redisCount('fileShareStarts');
     } else {
       this.cmdHost(socket, 'screenshare://' + socket.id);
-      redisCount('screenShareStarts');
     }
     const match = this.roster.find((user) => user.id === socket.id);
     if (match) {
@@ -628,7 +531,7 @@ export class Room {
       options: { size: string; region: string };
     }
   ) => {
-    if (this.vBrowser || this.roomRedis) {
+    if (this.vBrowser) {
       return;
     }
     if (!this.validateLock(socket.id)) {
@@ -644,50 +547,7 @@ export class Room {
       socket.emit('errorMessage', 'Invalid input.');
       return;
     }
-    const clientId = this.clientIdMap[socket.id];
-    const uid = this.uidMap[socket.id];
     // Log the vbrowser creation by uid and clientid
-    if (redis) {
-      const expireTime = getStartOfDay() / 1000 + 86400;
-      if (clientId) {
-        const clientCount = await redis.zincrby(
-          'vBrowserClientIDs',
-          1,
-          clientId
-        );
-        redis.expireat('vBrowserClientIDs', expireTime);
-        const clientMinutes = await redis.zincrby(
-          'vBrowserClientIDMinutes',
-          1,
-          clientId
-        );
-        redis.expireat('vBrowserClientIDMinutes', expireTime);
-      }
-      if (uid) {
-        const uidCount = await redis.zincrby('vBrowserUIDs', 1, uid);
-        redis.expireat('vBrowserUIDs', expireTime);
-        const uidMinutes = await redis.zincrby('vBrowserUIDMinutes', 1, uid);
-        redis.expireat('vBrowserUIDMinutes', expireTime);
-        // TODO limit users based on these counts
-
-        const uidLock = await redis.set(
-          'vBrowserUIDLock:' + uid,
-          '1',
-          'NX',
-          'EX',
-          120
-        );
-        if (!uidLock) {
-          socket.emit(
-            'errorMessage',
-            'There is already an active vBrowser for this user.'
-          );
-          return;
-        }
-      }
-    }
-    let isLarge = false;
-    let region = null;
     if (config.STRIPE_SECRET_KEY && data && data.uid && data.token) {
       const decoded = await validateUserToken(data.uid, data.token);
       // Check if user is subscriber, if so allow isLarge
@@ -697,13 +557,10 @@ export class Room {
           customer?.subscriptions?.data?.find((sub) => sub?.status === 'active')
         ) {
           console.log('found active sub for ', customer?.email);
-          isLarge = data.options?.size === 'large';
-          region = data.options?.region;
         }
       }
     }
     // TODO temporary testing out default to US region
-    region = 'US';
 
     if (config.RECAPTCHA_SECRET_KEY) {
       try {
@@ -717,11 +574,6 @@ export class Room {
         const failed = validation?.data?.success === false;
         console.log('[RECAPTCHA] score: ', validation?.data?.score);
         if (failed || isLowScore) {
-          if (isLowScore) {
-            redisCount('recaptchaRejectsLowScore');
-          } else {
-            redisCount('recaptchaRejectsOther');
-          }
           socket.emit('errorMessage', 'Invalid ReCAPTCHA.');
           return;
         }
@@ -731,53 +583,17 @@ export class Room {
       }
     }
 
-    redisCount('vBrowserStarts');
     this.cmdHost(socket, 'vbrowser://');
-    const vmManager = getVMManager(config.VM_MANAGER_ID, isLarge, region);
-    if (!vmManager) {
-      socket.emit(
-        'errorMessage',
-        'Server is not configured properly for VBrowsers.'
-      );
-      return;
-    }
-    this.roomRedis = new Redis(config.REDIS_URL);
-    const assignment = await assignVM(this.roomRedis, vmManager);
-    if (!this.roomRedis) {
-      // Maybe the user cancelled the request before assignment finished
-      return;
-    }
-    this.roomRedis?.disconnect();
-    this.roomRedis = undefined;
-    if (!assignment) {
-      this.cmdHost(socket, '');
-      this.vBrowser = undefined;
-      socket.emit(
-        'errorMessage',
-        'Failed to assign VBrowser. Please try again later.'
-      );
-      redisCount('vBrowserFails');
-      return;
-    }
-    this.vBrowser = assignment;
-    this.vBrowser.controllerClient = clientId;
-    this.vBrowser.creatorUID = uid;
-    this.vBrowser.creatorClientID = clientId;
-    this.cmdHost(
-      null,
-      'vbrowser://' + this.vBrowser.pass + '@' + this.vBrowser.host
-    );
   };
 
   private stopVBrowser = async (socket: Socket) => {
-    if (!this.vBrowser && !this.roomRedis && this.video !== 'vbrowser://') {
+    if (!this.vBrowser && this.video !== 'vbrowser://') {
       return;
     }
     if (!this.validateLock(socket.id)) {
       return;
     }
     await this.stopVBrowserInternal();
-    redisCount('vBrowserTerminateManual');
   };
 
   private changeController = (socket: Socket, data: string) => {
@@ -800,21 +616,15 @@ export class Room {
     if (!this.validateLock(socket.id)) {
       return;
     }
-    if (!redis) {
-      return;
-    }
     // calculate hash, gzip and save to redis
     const hash = crypto
       .createHash('sha256')
       .update(data, 'utf8')
       .digest()
       .toString('hex');
-    const gzipData = (await gzip(data)) as Buffer;
     // console.log(data.length, gzipData.length);
-    await redis.setex('subtitle:' + hash, 24 * 60 * 60, gzipData);
     this.subtitle = hash;
     this.io.of(this.roomId).emit('REC:subtitle', this.subtitle);
-    redisCount('subUploads');
   };
 
   private lockRoom = async (
@@ -849,10 +659,6 @@ export class Room {
       undo: boolean;
     }
   ) => {
-    if (!postgres) {
-      socket.emit('errorMessage', 'Database is not available');
-      return;
-    }
     const decoded = await validateUserToken(
       data?.uid as string,
       data?.token as string
@@ -861,87 +667,14 @@ export class Room {
       socket.emit('errorMessage', 'Failed to authenticate user');
       return;
     }
-    const owner = decoded.uid;
     const isOwner = await this.validateOwner(decoded.uid);
     if (!isOwner) {
       socket.emit('errorMessage', 'Not current room owner');
       return;
     }
-    const customer = await getCustomerByEmail(decoded.email as string);
-    const isSubscriber = Boolean(
-      customer?.subscriptions?.data?.find((sub) => sub?.status === 'active')
-    );
     if (data.undo) {
-      await updateObject(
-        postgres,
-        'room',
-        {
-          password: null,
-          owner: null,
-          vanity: null,
-          isChatDisabled: null,
-          isSubRoom: null,
-        },
-        { roomId: this.roomId }
-      );
       socket.emit('REC:getRoomState', {});
-    } else {
-      // validate room count
-      const roomCount = (
-        await postgres.query(
-          'SELECT count(1) from room where owner = $1 AND "roomId" != $2',
-          [owner, this.roomId]
-        )
-      ).rows[0].count;
-      const limit = isSubscriber ? config.SUBSCRIBER_ROOM_LIMIT : 1;
-      // console.log(roomCount, limit, isSubscriber);
-      if (roomCount >= limit) {
-        socket.emit(
-          'errorMessage',
-          `You've exceeded the permanent room limit. Subscribe for additional permanent rooms.`
-        );
-        return;
-      }
-      // Only keep the rows for which we have a postgres column
-      const roomObj: any = {
-        roomId: this.roomId,
-        creationTime: this.creationTime,
-        owner: owner,
-        isSubRoom: isSubscriber,
-      };
-      let result: QueryResult | null = null;
-      result = await upsertObject(postgres, 'room', roomObj, {
-        roomId: this.roomId,
-      });
-      const row = result?.rows?.[0];
-      // console.log(result, row);
-      socket.emit('REC:getRoomState', {
-        password: row?.password,
-        vanity: row?.vanity,
-        owner: row?.owner,
-      });
-    }
-  };
-
-  private getRoomState = async (socket: Socket) => {
-    if (!postgres) {
-      return;
-    }
-    const result = await postgres.query(
-      `SELECT password, vanity, owner, "isChatDisabled" FROM room where "roomId" = $1`,
-      [this.roomId]
-    );
-    const first = result.rows[0];
-    if (this.isChatDisabled === undefined) {
-      this.isChatDisabled = Boolean(first?.isChatDisabled);
-    }
-    // TODO only send the password if this is current owner
-    socket.emit('REC:getRoomState', {
-      password: first?.password,
-      vanity: first?.vanity,
-      owner: first?.owner,
-      isChatDisabled: first?.isChatDisabled,
-    });
+    } 
   };
 
   private setRoomState = async (
@@ -954,10 +687,6 @@ export class Room {
       isChatDisabled: boolean;
     }
   ) => {
-    if (!postgres) {
-      socket.emit('errorMessage', 'Database is not available');
-      return;
-    }
     const decoded = await validateUserToken(
       data?.uid as string,
       data?.token as string
@@ -997,30 +726,6 @@ export class Room {
     if (isSubscriber) {
       // user must be sub to set vanity
       roomObj.vanity = vanity;
-    }
-    try {
-      const query = `UPDATE room
-        SET ${Object.keys(roomObj).map((k, i) => `"${k}" = $${i + 1}`)}
-        WHERE "roomId" = $${Object.keys(roomObj).length + 1}
-        AND owner = $${Object.keys(roomObj).length + 2}
-        RETURNING *`;
-      const result = await postgres.query(query, [
-        ...Object.values(roomObj),
-        this.roomId,
-        decoded.uid,
-      ]);
-      const row = result.rows[0];
-      this.isChatDisabled = Boolean(row?.isChatDisabled);
-      // TODO only send password if current owner
-      this.io.of(this.roomId).emit('REC:getRoomState', {
-        password: row?.password,
-        vanity: row?.vanity,
-        owner: row?.owner,
-        isChatDisabled: row?.isChatDisabled,
-      });
-      socket.emit('successMessage', 'Saved admin settings');
-    } catch (e) {
-      console.warn(e);
     }
   };
 
